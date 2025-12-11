@@ -25,9 +25,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-4 border-b border-dark-700">
         <h1 className="text-xl font-bold flex items-center gap-2 text-white tracking-tight">
           <Zap className="text-primary-500 fill-primary-500" size={20} />
-          TestMaster
+          Front-end Testing Chanllenge
         </h1>
-        <p className="text-xs text-slate-500 mt-1 pl-7">Dev Lab v2.1</p>
+        <p className="text-xs text-slate-500 mt-1 pl-7">v1.0</p>
       </div>
       
       <div className="flex-1 overflow-y-auto p-2 space-y-6">
