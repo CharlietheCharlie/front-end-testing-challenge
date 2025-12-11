@@ -8,7 +8,8 @@ import {
   Cart, KanbanBoard, DeleteAction, ExternalLink,
   UserListNetwork, PaymentIframe, AvatarUpload, AuthGreeting,
   ResponsiveMenu, PopupTrigger,
-  ThemeDisplay, ReduxCounter, ModalComponent, ErrorBoundaryDemo, ResponsiveComponent
+  ThemeDisplay, ReduxCounter, ModalComponent, ErrorBoundaryDemo, ResponsiveComponent,
+  RegistrationForm, LiveStatus, CopyLink
 } from './targets';
 
 interface LessonPreviewProps {
@@ -53,6 +54,11 @@ export const LessonPreview: React.FC<LessonPreviewProps> = ({ lesson }) => {
     case ModalComponent: return <ModalComponent />;
     case ErrorBoundaryDemo: return <ErrorBoundaryDemo />;
     case ResponsiveComponent: return <ResponsiveComponent />;
+
+    // Expert
+    case RegistrationForm: return <RegistrationForm />;
+    case LiveStatus: return <LiveStatus />;
+    case CopyLink: return <CopyLink />;
 
     default: return <div>Component Not Found</div>;
   }

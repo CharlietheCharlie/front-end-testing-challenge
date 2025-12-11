@@ -5,6 +5,7 @@ import { SECTION3 } from './lessons/section3';
 import { SECTION4 } from './lessons/section4';
 import { SECTION5 } from './lessons/section5';
 import { SECTION6 } from './lessons/section6';
+import { SECTION7 } from './lessons/section7';
 
 export const LESSONS: Lesson[] = [
   ...SECTION1,
@@ -13,4 +14,5 @@ export const LESSONS: Lesson[] = [
   ...SECTION4,
   ...SECTION5,
   ...SECTION6,
+  ...SECTION7
 ];
