@@ -5,7 +5,10 @@ import {
   UserRoleList, TabSwitcher, DoubleForm, TagInput, 
   TooltipDemo, PreferenceForm, SimpleList, RetryButton, 
   DashboardWidget, SearchResults, Newsletter, HooksPlaceholder, 
-  Cart, KanbanBoard, DeleteAction, ExternalLink 
+  Cart, KanbanBoard, DeleteAction, ExternalLink,
+  UserListNetwork, PaymentIframe, AvatarUpload, AuthGreeting,
+  ResponsiveMenu, PopupTrigger,
+  ThemeDisplay, ReduxCounter, ModalComponent, ErrorBoundaryDemo, ResponsiveComponent
 } from './targets';
 
 interface LessonPreviewProps {
@@ -34,6 +37,22 @@ export const LessonPreview: React.FC<LessonPreviewProps> = ({ lesson }) => {
     case KanbanBoard: return <KanbanBoard />;
     case DeleteAction: return <DeleteAction />;
     case ExternalLink: return <ExternalLink />;
+    
+    // Playwright new
+    case UserListNetwork: return <UserListNetwork />;
+    case PaymentIframe: return <PaymentIframe />;
+    case AvatarUpload: return <AvatarUpload />;
+    case AuthGreeting: return <AuthGreeting />;
+    case ResponsiveMenu: return <ResponsiveMenu />;
+    case PopupTrigger: return <PopupTrigger />;
+
+    // Advanced
+    case ThemeDisplay: return <ThemeDisplay />;
+    case ReduxCounter: return <ReduxCounter />;
+    case ModalComponent: return <ModalComponent />;
+    case ErrorBoundaryDemo: return <ErrorBoundaryDemo />;
+    case ResponsiveComponent: return <ResponsiveComponent />;
+
     default: return <div>Component Not Found</div>;
   }
 };

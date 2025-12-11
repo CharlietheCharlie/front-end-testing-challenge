@@ -20,7 +20,18 @@ import {
   Cart, CartFlowCode,
   KanbanBoard,
   DeleteAction,
-  ExternalLink
+  ExternalLink,
+  UserListNetwork,
+  PaymentIframe,
+  AvatarUpload,
+  AuthGreeting,
+  ResponsiveMenu,
+  PopupTrigger,
+  ThemeDisplay, ThemeDisplayCode,
+  ReduxCounter, ReduxCounterCode,
+  ModalComponent, ModalComponentCode,
+  ErrorBoundaryDemo, ErrorBoundaryCode,
+  ResponsiveComponent, ResponsiveComponentCode
 } from '../components/targets';
 
 export const LESSONS: Lesson[] = [
@@ -870,6 +881,353 @@ test('external link', async ({ page }) => {
       {
         description: { en: "Check Target", zh: "檢查 Target" },
         mustMatch: [ /toHaveAttribute\(.*target.*_blank.*\)/ ]
+      }
+    ]
+  },
+  {
+    id: '5.5',
+    section: '5. Playwright',
+    title: { en: 'Network Interception', zh: '網路攔截 (Mocking)' },
+    description: { en: 'Use page.route to mock API responses.', zh: '使用 page.route 模擬 API 回應。' },
+    framework: TestFramework.PLAYWRIGHT,
+    difficulty: 'Advanced',
+    requirements: [ { en: 'Intercept /api/users', zh: '攔截 /api/users' }, { en: 'Fulfill with JSON', zh: '回傳 JSON 資料' }, { en: 'Assert data visible', zh: '確認資料顯示' } ],
+    initialCode: `import { test, expect } from '@playwright/test';
+
+test('mocks api', async ({ page }) => {
+  // await page.route(...)
+  await page.goto('/users');
+});`,
+    targetComponent: UserListNetwork,
+    targetCodeDisplay: `fetch('/api/users')`,
+    hint: { 
+      en: "await page.route('**/api/users', route => route.fulfill({ json: ['Alice', 'Bob'] }));\nawait page.goto('/users');\nawait expect(page.getByText('Alice')).toBeVisible();", 
+      zh: "await page.route('**/api/users', route => route.fulfill({ json: ['Alice', 'Bob'] }));\nawait page.goto('/users');\nawait expect(page.getByText('Alice')).toBeVisible();" 
+    },
+    validationRules: [
+      {
+        description: { en: "Route API", zh: "設定 Route" },
+        mustMatch: [ /page\.route\(.*users.*\)/ ]
+      },
+      {
+        description: { en: "Fulfill Request", zh: "回傳假資料" },
+        mustMatch: [ /route\.fulfill\(.*json.*\)/ ]
+      }
+    ]
+  },
+  {
+    id: '5.6',
+    section: '5. Playwright',
+    title: { en: 'Iframe Handling', zh: 'Iframe 處理' },
+    description: { en: 'Access elements inside an iframe using frameLocator.', zh: '使用 frameLocator 存取 iframe 內部元素。' },
+    framework: TestFramework.PLAYWRIGHT,
+    difficulty: 'Intermediate',
+    requirements: [ { en: 'Locate iframe', zh: '定位 iframe' }, { en: 'Find input inside frame', zh: '找到 frame 內的輸入框' }, { en: 'Type card number', zh: '輸入卡號' } ],
+    initialCode: `import { test, expect } from '@playwright/test';
+
+test('payment iframe', async ({ page }) => {
+  await page.goto('/pay');
+  // const frame = page.frameLocator(...)
+});`,
+    targetComponent: PaymentIframe,
+    targetCodeDisplay: `<iframe>`,
+    hint: { 
+      en: "const frame = page.frameLocator('iframe[title=\"Secure Payment\"]');\nawait frame.getByTestId('cc-input').fill('1234');", 
+      zh: "const frame = page.frameLocator('iframe[title=\"Secure Payment\"]');\nawait frame.getByTestId('cc-input').fill('1234');" 
+    },
+    validationRules: [
+      {
+        description: { en: "Use FrameLocator", zh: "使用 FrameLocator" },
+        mustMatch: [ /frameLocator\(.*\)/ ]
+      },
+      {
+        description: { en: "Fill Input", zh: "填寫輸入框" },
+        mustMatch: [ /fill\(.*1234.*\)/ ]
+      }
+    ]
+  },
+  {
+    id: '5.7',
+    section: '5. Playwright',
+    title: { en: 'File Upload', zh: '檔案上傳' },
+    description: { en: 'Simulate file selection using setInputFiles.', zh: '使用 setInputFiles 模擬檔案選擇。' },
+    framework: TestFramework.PLAYWRIGHT,
+    difficulty: 'Intermediate',
+    requirements: [ { en: 'Select file input', zh: '選取檔案輸入框' }, { en: 'Set files', zh: '設定檔案' }, { en: 'Assert filename', zh: '驗證檔名顯示' } ],
+    initialCode: `import { test, expect } from '@playwright/test';
+
+test('upload file', async ({ page }) => {
+  await page.goto('/upload');
+  // setInputFiles
+});`,
+    targetComponent: AvatarUpload,
+    targetCodeDisplay: `<input type="file" />`,
+    hint: { 
+      en: "await page.getByTestId('file-input').setInputFiles({ name: 'avatar.png', mimeType: 'image/png', buffer: Buffer.from('') });\nawait expect(page.locator('text=avatar.png')).toBeVisible();", 
+      zh: "await page.getByTestId('file-input').setInputFiles({ name: 'avatar.png', mimeType: 'image/png', buffer: Buffer.from('') });\nawait expect(page.locator('text=avatar.png')).toBeVisible();" 
+    },
+    validationRules: [
+      {
+        description: { en: "Set Input Files", zh: "設定上傳檔案" },
+        mustMatch: [ /setInputFiles/ ]
+      }
+    ]
+  },
+  {
+    id: '5.8',
+    section: '5. Playwright',
+    title: { en: 'Storage State (Auth)', zh: '狀態保存 (登入)' },
+    description: { en: 'Inject local storage to simulate logged-in state.', zh: '注入 localStorage 以模擬登入狀態。' },
+    framework: TestFramework.PLAYWRIGHT,
+    difficulty: 'Advanced',
+    requirements: [ { en: 'Add auth_token to localStorage', zh: '新增 auth_token 到 localStorage' }, { en: 'Reload page', zh: '重新整理頁面' }, { en: 'Assert welcome message', zh: '驗證歡迎訊息' } ],
+    initialCode: `import { test, expect } from '@playwright/test';
+
+test('authenticated view', async ({ page }) => {
+  await page.goto('/dashboard');
+  // page.evaluate or addInitScript
+});`,
+    targetComponent: AuthGreeting,
+    targetCodeDisplay: `localStorage.getItem('auth_token')`,
+    hint: { 
+      en: "await page.addInitScript(() => localStorage.setItem('auth_token', '123'));\nawait page.reload();\nawait expect(page.getByText('Welcome')).toBeVisible();", 
+      zh: "await page.addInitScript(() => localStorage.setItem('auth_token', '123'));\nawait page.reload();\nawait expect(page.getByText('Welcome')).toBeVisible();" 
+    },
+    validationRules: [
+      {
+        description: { en: "Inject Storage", zh: "注入 Storage" },
+        mustMatch: [ /addInitScript|evaluate/ ]
+      },
+      {
+        description: { en: "Reload/Goto", zh: "重新整理/導航" },
+        mustMatch: [ /reload\(\)|goto\(/ ]
+      }
+    ]
+  },
+  {
+    id: '5.9',
+    section: '5. Playwright',
+    title: { en: 'Mobile Viewport', zh: '行動裝置視圖' },
+    description: { en: 'Resize viewport to test responsive design.', zh: '調整視窗大小以測試響應式設計。' },
+    framework: TestFramework.PLAYWRIGHT,
+    difficulty: 'Beginner',
+    requirements: [ { en: 'Set viewport to { width: 375, height: 667 }', zh: '設定視窗大小為 375x667' }, { en: 'Assert mobile menu visible', zh: '確認行動選單顯示' } ],
+    initialCode: `import { test, expect } from '@playwright/test';
+
+test('mobile layout', async ({ page }) => {
+  // setViewportSize
+  await page.goto('/home');
+});`,
+    targetComponent: ResponsiveMenu,
+    targetCodeDisplay: `className="md:hidden"`,
+    hint: { 
+      en: "await page.setViewportSize({ width: 375, height: 667 });\nawait expect(page.getByText('Mobile Menu')).toBeVisible();", 
+      zh: "await page.setViewportSize({ width: 375, height: 667 });\nawait expect(page.getByText('Mobile Menu')).toBeVisible();" 
+    },
+    validationRules: [
+      {
+        description: { en: "Set Viewport", zh: "設定視窗大小" },
+        mustMatch: [ /setViewportSize/ ]
+      }
+    ]
+  },
+  {
+    id: '5.10',
+    section: '5. Playwright',
+    title: { en: 'Multiple Tabs', zh: '多頁籤處理' },
+    description: { en: 'Handle new pages/tabs opened by target="_blank".', zh: '處理 target="_blank" 開啟的新頁籤。' },
+    framework: TestFramework.PLAYWRIGHT,
+    difficulty: 'Advanced',
+    requirements: [ { en: 'Wait for event "popup"', zh: '等待 popup 事件' }, { en: 'Click trigger button', zh: '點擊觸發按鈕' }, { en: 'Assert popup url', zh: '驗證新視窗 URL' } ],
+    initialCode: `import { test, expect } from '@playwright/test';
+
+test('opens help', async ({ page }) => {
+  await page.goto('/app');
+  // const popupPromise = page.waitForEvent('popup');
+  // Click
+  // const popup = await popupPromise;
+});`,
+    targetComponent: PopupTrigger,
+    targetCodeDisplay: `window.open(...)`,
+    hint: { 
+      en: "const popupPromise = page.waitForEvent('popup');\nawait page.getByText('Open Help').click();\nconst popup = await popupPromise;\nawait expect(popup).toHaveURL(/help/);", 
+      zh: "const popupPromise = page.waitForEvent('popup');\nawait page.getByText('Open Help').click();\nconst popup = await popupPromise;\nawait expect(popup).toHaveURL(/help/);" 
+    },
+    validationRules: [
+      {
+        description: { en: "Wait for Popup", zh: "等待 Popup" },
+        mustMatch: [ /waitForEvent\(['"]popup['"]\)/ ]
+      },
+      {
+        description: { en: "Await Promise", zh: "等待 Promise" },
+        mustMatch: [ /await popupPromise/ ]
+      }
+    ]
+  },
+
+  // --- SECTION 6: ADVANCED INTEGRATION ---
+  {
+    id: '6.1',
+    section: '6. Advanced Integration',
+    title: { en: 'Context Providers', zh: 'Context Provider 整合' },
+    description: { en: 'Test a component that relies on React Context by wrapping it.', zh: '透過 Wrapper 測試依賴 React Context 的組件。' },
+    framework: TestFramework.RTL,
+    difficulty: 'Intermediate',
+    requirements: [ { en: 'Create ThemeContext.Provider', zh: '建立 ThemeContext.Provider' }, { en: 'Pass value="dark"', zh: '傳遞 value="dark"' }, { en: 'Assert theme is dark', zh: '確認顯示 dark' } ],
+    initialCode: `import { render, screen } from '@testing-library/react';
+import { ThemeDisplay, ThemeContext } from './ThemeDisplay';
+
+test('shows dark theme', () => {
+  // render with wrapper
+});`,
+    targetComponent: ThemeDisplay,
+    targetCodeDisplay: ThemeDisplayCode,
+    hint: { 
+      en: "render(\n  <ThemeContext.Provider value=\"dark\">\n    <ThemeDisplay />\n  </ThemeContext.Provider>\n);\nexpect(screen.getByText(/dark/i)).toBeInTheDocument();", 
+      zh: "render(\n  <ThemeContext.Provider value=\"dark\">\n    <ThemeDisplay />\n  </ThemeContext.Provider>\n);\nexpect(screen.getByText(/dark/i)).toBeInTheDocument();" 
+    },
+    validationRules: [
+      {
+        description: { en: "Wrap with Provider", zh: "使用 Provider 包裹" },
+        mustMatch: [ /ThemeContext\.Provider/, /value=["']dark["']/ ]
+      },
+      {
+        description: { en: "Verify Text", zh: "驗證文字" },
+        mustMatch: [ /getByText.*dark/i ]
+      }
+    ]
+  },
+  {
+    id: '6.2',
+    section: '6. Advanced Integration',
+    title: { en: 'State Stores (Redux)', zh: '狀態管理 (模擬 Redux)' },
+    description: { en: 'Interact with a global store-like reducer pattern.', zh: '測試類似全域狀態管理的 Reducer 模式。' },
+    framework: TestFramework.RTL,
+    difficulty: 'Intermediate',
+    requirements: [ { en: 'Click increment button', zh: '點擊增加按鈕' }, { en: 'Assert count becomes 1', zh: '確認數字變為 1' } ],
+    initialCode: `import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ReduxCounter } from './ReduxCounter';
+
+test('increments store', async () => {
+  const user = userEvent.setup();
+  render(<ReduxCounter />);
+  // Click +
+});`,
+    targetComponent: ReduxCounter,
+    targetCodeDisplay: ReduxCounterCode,
+    hint: { 
+      en: "await user.click(screen.getByText('+'));\nexpect(screen.getByTestId('count-value')).toHaveTextContent('1');", 
+      zh: "await user.click(screen.getByText('+'));\nexpect(screen.getByTestId('count-value')).toHaveTextContent('1');" 
+    },
+    validationRules: [
+      {
+        description: { en: "Click Increment", zh: "點擊增加" },
+        mustMatch: [ /user\.click/ ]
+      },
+      {
+        description: { en: "Check Store Value", zh: "檢查 Store 數值" },
+        mustMatch: [ /toHaveTextContent\(['"]1['"]\)/ ]
+      }
+    ]
+  },
+  {
+    id: '6.3',
+    section: '6. Advanced Integration',
+    title: { en: 'Portals (Modals)', zh: 'Portals (跳窗)' },
+    description: { en: 'Test elements rendered outside the root using Portals.', zh: '測試透過 Portal 渲染在 Root 外部的元素。' },
+    framework: TestFramework.RTL,
+    difficulty: 'Intermediate',
+    requirements: [ { en: 'Click open button', zh: '點擊開啟按鈕' }, { en: 'Find dialog using getByRole', zh: '使用 getByRole 找到對話框' }, { en: 'Assert "Terms" is visible', zh: '確認 "Terms" 可見' } ],
+    initialCode: `import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ModalComponent } from './ModalComponent';
+
+test('opens modal', async () => {
+  const user = userEvent.setup();
+  render(<ModalComponent />);
+  // Click
+  // Check dialog
+});`,
+    targetComponent: ModalComponent,
+    targetCodeDisplay: ModalComponentCode,
+    hint: { 
+      en: "await user.click(screen.getByText(/open/i));\nconst dialog = screen.getByRole('dialog');\nexpect(within(dialog).getByText('Terms')).toBeVisible();", 
+      zh: "await user.click(screen.getByText(/open/i));\nconst dialog = screen.getByRole('dialog');\nexpect(within(dialog).getByText('Terms')).toBeVisible();" 
+    },
+    validationRules: [
+      {
+        description: { en: "Find Dialog Role", zh: "找到 Dialog Role" },
+        mustMatch: [ /getByRole\(['"]dialog['"]\)/ ]
+      },
+      {
+        description: { en: "Check Content in Portal", zh: "檢查 Portal 內容" },
+        mustMatch: [ /within\(.*dialog.*\)/ ]
+      }
+    ]
+  },
+  {
+    id: '6.4',
+    section: '6. Advanced Integration',
+    title: { en: 'Error Boundaries', zh: '錯誤邊界' },
+    description: { en: 'Verify that the app catches crashes gracefully.', zh: '驗證應用程式能優雅地捕捉崩潰。' },
+    framework: TestFramework.RTL,
+    difficulty: 'Tricky',
+    requirements: [ { en: 'Silence console.error', zh: '隱藏 console.error' }, { en: 'Render <Bomb shouldThrow />', zh: '渲染 <Bomb shouldThrow />' }, { en: 'Find alert role', zh: '找到 alert role' } ],
+    initialCode: `import { render, screen } from '@testing-library/react';
+import { ErrorBoundary, Bomb } from './ErrorBoundaryDemo';
+
+test('catches error', () => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+  // render(<ErrorBoundary>...</ErrorBoundary>)
+});`,
+    targetComponent: ErrorBoundaryDemo,
+    targetCodeDisplay: ErrorBoundaryCode,
+    hint: { 
+      en: "render(<ErrorBoundary><Bomb shouldThrow={true} /></ErrorBoundary>);\nexpect(screen.getByRole('alert')).toHaveTextContent(/wrong/i);", 
+      zh: "render(<ErrorBoundary><Bomb shouldThrow={true} /></ErrorBoundary>);\nexpect(screen.getByRole('alert')).toHaveTextContent(/wrong/i);" 
+    },
+    validationRules: [
+      {
+        description: { en: "Render Wrapper", zh: "渲染 Wrapper" },
+        mustMatch: [ /<ErrorBoundary>/ ]
+      },
+      {
+        description: { en: "Catch Error UI", zh: "捕捉錯誤 UI" },
+        mustMatch: [ /getByRole\(['"]alert['"]\)/ ]
+      }
+    ]
+  },
+  {
+    id: '6.5',
+    section: '6. Advanced Integration',
+    title: { en: 'Custom Hook Logic', zh: '自定義 Hook 邏輯' },
+    description: { en: 'Test component behavior driven by a complex custom hook.', zh: '測試由複雜自定義 Hook 驅動的組件行為。' },
+    framework: TestFramework.RTL,
+    difficulty: 'Intermediate',
+    requirements: [ { en: 'Mock useWindowWidth to return 500', zh: '模擬 useWindowWidth 回傳 500' }, { en: 'Assert "Mobile" is rendered', zh: '確認渲染 "Mobile"' } ],
+    initialCode: `import { render, screen } from '@testing-library/react';
+import { ResponsiveComponent } from './ResponsiveComponent';
+import * as hooks from './hooks'; // Imaginary import
+
+test('mobile view', () => {
+  // jest.spyOn(hooks, 'useWindowWidth')...
+  render(<ResponsiveComponent />);
+});`,
+    targetComponent: ResponsiveComponent,
+    targetCodeDisplay: ResponsiveComponentCode,
+    hint: { 
+      en: "jest.spyOn(require('./hooks'), 'useWindowWidth').mockReturnValue(500);\nrender(<ResponsiveComponent />);\nexpect(screen.getByText('Mobile')).toBeInTheDocument();", 
+      zh: "jest.spyOn(require('./hooks'), 'useWindowWidth').mockReturnValue(500);\nrender(<ResponsiveComponent />);\nexpect(screen.getByText('Mobile')).toBeInTheDocument();" 
+    },
+    validationRules: [
+      {
+        description: { en: "Mock Hook", zh: "模擬 Hook" },
+        mustMatch: [ /spyOn/, /mockReturnValue/ ]
+      },
+      {
+        description: { en: "Verify Mobile", zh: "驗證 Mobile" },
+        mustMatch: [ /getByText\(['"]Mobile['"]\)/ ]
       }
     ]
   }
