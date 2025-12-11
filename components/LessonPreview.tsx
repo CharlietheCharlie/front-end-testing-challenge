@@ -3,7 +3,7 @@ import { Lesson } from '../types';
 import { 
   LoginForm, SecretMessage, TweetComposer, PaymentButton, 
   UserRoleList, TabSwitcher, DoubleForm, TagInput, 
-  TooltipDemo, PreferenceForm, SimpleList, RetryButton, 
+  TooltipDemo, PreferenceForm, UserForm, SimpleList, RetryButton, 
   DashboardWidget, SearchResults, Newsletter, HooksPlaceholder, 
   Cart, KanbanBoard, DeleteAction, ExternalLink,
   UserListNetwork, PaymentIframe, AvatarUpload, AuthGreeting,
@@ -27,6 +27,7 @@ export const LessonPreview: React.FC<LessonPreviewProps> = ({ lesson }) => {
     case TagInput: return <TagInput />;
     case TooltipDemo: return <TooltipDemo />;
     case PreferenceForm: return <PreferenceForm />;
+    case UserForm: return <UserForm onSubmit={() => {}} />;
     case SimpleList: return <SimpleList />;
     case RetryButton: return <RetryButton />;
     case DashboardWidget: return <DashboardWidget />;
