@@ -16,7 +16,6 @@ Unlike reading documentation, Frontend Testing Challenge lets you write code in 
 *   **Browser-Based Execution**: Uses a regex-based static analysis engine to validate test code instantly without a heavy backend.
 *   **Accessibility First**: Built-in "Roles Cheatsheet" to encourage best practices in accessibility testing.
 *   **Dual Language Support**: Switch between English and Traditional Chinese at any time.
-*   **AI Tutor Integration**: (Optional) Connects to Google Gemini API to provide personalized code reviews and hints.
 
 ## 🛠 Tech Stack
 
