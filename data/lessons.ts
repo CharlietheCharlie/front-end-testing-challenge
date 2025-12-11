@@ -10,6 +10,7 @@ import {
   TagInput, TagInputCode,
   TooltipDemo, TooltipDemoCode,
   PreferenceForm, PreferenceFormCode,
+  UserForm, UserFormCode,
   SimpleList, SimpleListCode,
   RetryButton, RetryButtonCode,
   DashboardWidget, DashboardWidgetCode,
@@ -67,7 +68,7 @@ test('renders form', () => {
     description: { en: 'Use queryBy for elements that might not exist.', zh: '使用 queryBy 來測試可能不存在的元素。' },
     framework: TestFramework.RTL,
     difficulty: 'Intermediate',
-    requirements: [ { en: 'Assert "secret" is missing initially', zh: '確認一開始 secret 不存在' }, { en: 'Click button using userEvent', zh: '使用 userEvent 點擊按鈕' }, { en: 'Assert "secret" exists', zh: '確認 secret 出現' } ],
+    requirements: [ { en: 'Assert "secret" is missing initially', zh: '確認一開始 secret 不存在' }, { en: 'Click button using await user.click', zh: '使用 await user.click 點擊按鈕' }, { en: 'Assert "secret" exists', zh: '確認 secret 出現' } ],
     initialCode: `import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SecretMessage } from './SecretMessage';
@@ -76,7 +77,7 @@ test('toggles visibility', async () => {
   const user = userEvent.setup();
   render(<SecretMessage />);
   // 1. Assert NOT in document (queryBy...)
-  // 2. Click
+  // 2. await user.click...
   // 3. Assert IN document
 });`,
     targetComponent: SecretMessage,
@@ -91,8 +92,8 @@ test('toggles visibility', async () => {
         mustMatch: [ /expect\(.*queryByTestId.*['"]secret['"].*\)\.not\.toBeInTheDocument/ ]
       },
       {
-        description: { en: "Click Toggle (user.click)", zh: "點擊切換 (user.click)" },
-        mustMatch: [ /user\.click/, /text=['"]Show['"]|name: \/show\/i/ ],
+        description: { en: "Async Click (await user.click)", zh: "非同步點擊 (await user.click)" },
+        mustMatch: [ /await\s+user\.click/, /text=['"]Show['"]|name: \/show\/i/ ],
         mustNotMatch: [ { pattern: /fireEvent/, message: { en: "Use userEvent instead of fireEvent", zh: "請使用 userEvent 取代 fireEvent" } } ]
       },
       {
@@ -208,10 +209,10 @@ test('shipping name', () => {
     id: '2.1',
     section: '2. Events & Interactions',
     title: { en: 'Typing & Disabled', zh: '輸入與禁用狀態' },
-    description: { en: 'Type text using userEvent and check button disabled state.', zh: '使用 userEvent 輸入文字並檢查按鈕是否禁用。' },
+    description: { en: 'Type text using await user.type and check button disabled state.', zh: '使用 await user.type 輸入文字並檢查按鈕是否禁用。' },
     framework: TestFramework.RTL,
     difficulty: 'Beginner',
-    requirements: [ { en: 'Type 21 chars using user.type', zh: '使用 user.type 輸入 21 個字' }, { en: 'Assert button is disabled', zh: '確認按鈕被禁用' } ],
+    requirements: [ { en: 'Type 21 chars using await user.type', zh: '使用 await user.type 輸入 21 個字' }, { en: 'Assert button is disabled', zh: '確認按鈕被禁用' } ],
     initialCode: `import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TweetComposer } from './TweetComposer';
@@ -219,23 +220,23 @@ import { TweetComposer } from './TweetComposer';
 test('validates length', async () => {
   const user = userEvent.setup();
   render(<TweetComposer />);
-  // Type long string...
+  // await user.type(...)
 });`,
     targetComponent: TweetComposer,
     targetCodeDisplay: TweetComposerCode,
     hint: { 
-      en: "await user.type(screen.getByRole('textbox'), 'This text is definitely longer than twenty characters');\nexpect(screen.getByText('Tweet')).toBeDisabled();", 
-      zh: "await user.type(screen.getByRole('textbox'), 'This text is definitely longer than twenty characters');\nexpect(screen.getByText('Tweet')).toBeDisabled();" 
+      en: "await user.type(screen.getByRole('textbox'), 'This text is definitely longer than twenty characters');\nexpect(screen.getByRole('button', { name: /tweet/i })).toBeDisabled();", 
+      zh: "await user.type(screen.getByRole('textbox'), 'This text is definitely longer than twenty characters');\nexpect(screen.getByRole('button', { name: /tweet/i })).toBeDisabled();" 
     },
     validationRules: [
       {
-        description: { en: "Use user.type", zh: "使用 user.type" },
-        mustMatch: [ /user\.type/, /value: ['"].{21,}['"]|['"].{21,}['"]/ ],
+        description: { en: "Async Type (await user.type)", zh: "非同步輸入 (await user.type)" },
+        mustMatch: [ /await\s+user\.type/, /value: ['"].{21,}['"]|['"].{21,}['"]/ ],
         mustNotMatch: [ { pattern: /fireEvent/, message: { en: "Use userEvent instead of fireEvent", zh: "請使用 userEvent 取代 fireEvent" } } ]
       },
       {
         description: { en: "Check Disabled", zh: "檢查禁用" },
-        mustMatch: [ /expect\(.*getByText.*['"]Tweet['"].*\).*\)\.toBeDisabled/ ]
+        mustMatch: [ /expect\(.*getByRole.*['"]button['"].*name: \/tweet\/i.*\)\.toBeDisabled\(\)/]
       }
     ]
   },
@@ -246,7 +247,7 @@ test('validates length', async () => {
     description: { en: 'Ensure button logic only fires once using userEvent.', zh: '使用 userEvent 確保按鈕邏輯只觸發一次。' },
     framework: TestFramework.RTL,
     difficulty: 'Intermediate',
-    requirements: [ { en: 'Click button twice', zh: '點擊兩次' }, { en: 'Check status is "Processing..."', zh: '確認狀態為 Processing...' } ],
+    requirements: [ { en: 'Click button twice (await)', zh: '點擊兩次 (await)' }, { en: 'Check status is "Processing..."', zh: '確認狀態為 Processing...' } ],
     initialCode: `import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PaymentButton } from './PaymentButton';
@@ -254,18 +255,23 @@ import { PaymentButton } from './PaymentButton';
 test('prevents double', async () => {
   const user = userEvent.setup();
   render(<PaymentButton />);
-  // Click... click...
+  // await user.click...
+  // await user.click...
 });`,
     targetComponent: PaymentButton,
     targetCodeDisplay: PaymentButtonCode,
     hint: { 
-      en: "const btn = screen.getByRole('button', { name: /pay/i });\nawait user.click(btn);\nawait user.click(btn);\nexpect(btn).toHaveTextContent('Processing...');", 
-      zh: "const btn = screen.getByRole('button', { name: /pay/i });\nawait user.click(btn);\nawait user.click(btn);\nexpect(btn).toHaveTextContent('Processing...');" 
+      en: "const button = screen.getByRole('button', { name: /pay/i });\nawait user.click(button);\nawait user.click(button);\nexpect(button).toHaveTextContent('Processing...');", 
+      zh: "const button = screen.getByRole('button', { name: /pay/i });\nawait user.click(button);\nawait user.click(button);\nexpect(button).toHaveTextContent('Processing...');" 
     },
     validationRules: [
       {
-        description: { en: "Double Click (user.click)", zh: "點擊兩次 (user.click)" },
-        mustMatch: [ /(user\.click.*){2}/ ],
+        description: { en: "Select using getByRole", zh: "使用 getByRole 選取" },
+        mustMatch: [ /getByRole\(.*['"]button['"].*\)/ ]
+      },
+      {
+        description: { en: "Async Double Click", zh: "非同步點擊兩次" },
+        mustMatch: [ /await\s+user\.click.*await\s+user\.click/s ],
         mustNotMatch: [ { pattern: /fireEvent/, message: { en: "Use userEvent instead of fireEvent", zh: "請使用 userEvent 取代 fireEvent" } } ]
       },
       {
@@ -281,7 +287,7 @@ test('prevents double', async () => {
     description: { en: 'Simulate pressing Enter key using userEvent.', zh: '使用 userEvent 模擬按下 Enter 鍵。' },
     framework: TestFramework.RTL,
     difficulty: 'Intermediate',
-    requirements: [ { en: 'Type "React"', zh: '輸入 "React"' }, { en: 'Press Enter using userEvent', zh: '使用 userEvent 按下 Enter' }, { en: 'Check tag "#React" exists', zh: '確認 "#React" 存在' } ],
+    requirements: [ { en: 'Type "React"', zh: '輸入 "React"' }, { en: 'Press Enter using {enter}', zh: '使用 {enter} 模擬按鍵' }, { en: 'Check tag "#React" exists', zh: '確認 "#React" 存在' } ],
     initialCode: `import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TagInput } from './TagInput';
@@ -289,8 +295,7 @@ import { TagInput } from './TagInput';
 test('adds tag on enter', async () => {
   const user = userEvent.setup();
   render(<TagInput />);
-  // Type 'React'
-  // Press Enter ({enter})
+  // await user.type...
 });`,
     targetComponent: TagInput,
     targetCodeDisplay: TagInputCode,
@@ -300,8 +305,8 @@ test('adds tag on enter', async () => {
     },
     validationRules: [
       {
-        description: { en: "Type 'React' with Enter", zh: "輸入 'React' 並按 Enter" },
-        mustMatch: [ /user\.type\(.*['"]React\{enter\}['"]\)|user\.keyboard\(.*\{enter\}\)/ ],
+        description: { en: "Async Type with Enter", zh: "非同步輸入並按 Enter" },
+        mustMatch: [ /await\s+user\.type\(.*['"]React\{enter\}['"]\)|await\s+user\.keyboard\(.*\{enter\}\)/ ],
         mustNotMatch: [ { pattern: /fireEvent/, message: { en: "Use userEvent instead of fireEvent", zh: "請使用 userEvent 取代 fireEvent" } } ]
       },
       {
@@ -317,7 +322,7 @@ test('adds tag on enter', async () => {
     description: { en: 'Simulate mouse enter to show tooltip using userEvent.', zh: '使用 userEvent 模擬滑鼠移入以顯示 Tooltip。' },
     framework: TestFramework.RTL,
     difficulty: 'Intermediate',
-    requirements: [ { en: 'Hover over text using user.hover', zh: '使用 user.hover 滑鼠移入文字' }, { en: 'Assert tooltip visible', zh: '確認 Tooltip 顯示' } ],
+    requirements: [ { en: 'Hover over text using await user.hover', zh: '使用 await user.hover 滑鼠移入文字' }, { en: 'Assert tooltip visible', zh: '確認 Tooltip 顯示' } ],
     initialCode: `import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TooltipDemo } from './TooltipDemo';
@@ -325,7 +330,7 @@ import { TooltipDemo } from './TooltipDemo';
 test('shows tooltip', async () => {
   const user = userEvent.setup();
   render(<TooltipDemo />);
-  // user.hover...
+  // await user.hover...
 });`,
     targetComponent: TooltipDemo,
     targetCodeDisplay: TooltipDemoCode,
@@ -335,13 +340,13 @@ test('shows tooltip', async () => {
     },
     validationRules: [
       {
-        description: { en: "Trigger Hover (user.hover)", zh: "觸發 Hover (user.hover)" },
-        mustMatch: [ /user\.hover/ ],
+        description: { en: "Async Hover (await user.hover)", zh: "非同步 Hover (await user.hover)" },
+        mustMatch: [ /await\s+user\.hover/ ],
         mustNotMatch: [ { pattern: /fireEvent/, message: { en: "Use userEvent instead of fireEvent", zh: "請使用 userEvent 取代 fireEvent" } } ]
       },
       {
         description: { en: "Find Tooltip & Check Visibility", zh: "找到 Tooltip 並檢查可見性" },
-        mustMatch: [ /expect\(.*(getByRole|getByText).*Help info.*\)\.toBeVisible/ ]
+        mustMatch: [ /expect\(.*(getByRole|queryByRole).*['"]tooltip['"].*\)\.toBeVisible/ ]
       }
     ]
   },
@@ -352,7 +357,7 @@ test('shows tooltip', async () => {
     description: { en: 'Check and uncheck using userEvent.', zh: '使用 userEvent 勾選與取消勾選。' },
     framework: TestFramework.RTL,
     difficulty: 'Beginner',
-    requirements: [ { en: 'Check "Email" using user.click', zh: '使用 user.click 勾選 Email' }, { en: 'Assert checkbox is checked', zh: '確認 Checkbox 已被勾選' } ],
+    requirements: [ { en: 'Check "Email" using await user.click', zh: '使用 await user.click 勾選 Email' }, { en: 'Assert checkbox is checked', zh: '確認 Checkbox 已被勾選' } ],
     initialCode: `import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PreferenceForm } from './PreferenceForm';
@@ -360,7 +365,7 @@ import { PreferenceForm } from './PreferenceForm';
 test('toggles preference', async () => {
   const user = userEvent.setup();
   render(<PreferenceForm />);
-  // Click checkbox
+  // await user.click...
 });`,
     targetComponent: PreferenceForm,
     targetCodeDisplay: PreferenceFormCode,
@@ -370,8 +375,8 @@ test('toggles preference', async () => {
     },
     validationRules: [
       {
-        description: { en: "Click Checkbox", zh: "點擊核取方塊" },
-        mustMatch: [ /user\.click/, /getByLabelText\(.*Email.*\)/ ]
+        description: { en: "Async Click Checkbox", zh: "非同步點擊核取方塊" },
+        mustMatch: [ /await\s+user\.click/, /getByLabelText\(.*Email.*\)/ ]
       },
       {
         description: { en: "Verify Checked State", zh: "驗證勾選狀態" },
@@ -380,15 +385,55 @@ test('toggles preference', async () => {
     ]
   },
 
-  // --- SECTION 3: ASYNC ---
+  // --- SECTION 3: ASYNC & MOCKING ---
   {
     id: '3.1',
     section: '3. Async & Mocking',
-    title: { en: 'Mock API', zh: 'API 模擬' },
-    description: { en: 'Mock fetch and wait for items.', zh: '模擬 fetch 並等待項目出現。' },
+    title: { en: 'Callbacks & Mocks', zh: 'Callback 模擬 (jest.fn)' },
+    description: { en: 'Create a mock function and verify it was called with correct arguments.', zh: '建立 Mock Function 並驗證它是否被正確呼叫與傳遞參數。' },
     framework: TestFramework.JEST,
     difficulty: 'Intermediate',
-    requirements: [ { en: 'Spy on fetch', zh: '監聽 fetch' }, { en: 'Mock response ["A"]', zh: '模擬回應 ["A"]' }, { en: 'Wait for "A"', zh: '等待 "A"' } ],
+    requirements: [ { en: 'Create mock: const mockSubmit = jest.fn()', zh: '建立 Mock: const mockSubmit = jest.fn()' }, { en: 'Pass to component', zh: '傳遞給組件' }, { en: 'Type and Click', zh: '輸入並點擊' }, { en: 'Expect calledWith({name: ...})', zh: '驗證被呼叫參數' } ],
+    initialCode: `import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { UserForm } from './UserForm';
+
+test('submits form data', async () => {
+  const user = userEvent.setup();
+  // 1. Create mock
+  // 2. Render(<UserForm onSubmit={mock} />)
+  // 3. Interaction
+  // 4. Expect
+});`,
+    targetComponent: UserForm,
+    targetCodeDisplay: UserFormCode,
+    hint: { 
+      en: "const mockSubmit = jest.fn();\nrender(<UserForm onSubmit={mockSubmit} />);\n\nawait user.type(screen.getByLabelText('Name'), 'Alice');\nawait user.click(screen.getByRole('button', { name: /save/i }));\n\nexpect(mockSubmit).toHaveBeenCalledWith({ name: 'Alice' });", 
+      zh: "const mockSubmit = jest.fn();\nrender(<UserForm onSubmit={mockSubmit} />);\n\nawait user.type(screen.getByLabelText('Name'), 'Alice');\nawait user.click(screen.getByRole('button', { name: /save/i }));\n\nexpect(mockSubmit).toHaveBeenCalledWith({ name: 'Alice' });" 
+    },
+    validationRules: [
+      {
+        description: { en: "Create jest.fn()", zh: "建立 jest.fn()" },
+        mustMatch: [ /const\s+\w+\s*=\s*jest\.fn\(\)/ ]
+      },
+      {
+        description: { en: "Async Type & Click", zh: "非同步輸入與點擊" },
+        mustMatch: [ /await\s+user\.type/, /await\s+user\.click/ ]
+      },
+      {
+        description: { en: "Verify calledWith", zh: "驗證參數 calledWith" },
+        mustMatch: [ /expect\(.*\)\.toHaveBeenCalledWith\(\{.*name:.*\}\)/ ]
+      }
+    ]
+  },
+  {
+    id: '3.2',
+    section: '3. Async & Mocking',
+    title: { en: 'Mock API (Fetch)', zh: 'API 模擬 (fetch)' },
+    description: { en: 'Mock the global fetch function to return fake data.', zh: '模擬全域 fetch 函數以回傳假資料。' },
+    framework: TestFramework.JEST,
+    difficulty: 'Intermediate',
+    requirements: [ { en: 'Spy on global.fetch', zh: '監聽 global.fetch' }, { en: 'Mock json response ["A"]', zh: '模擬 JSON 回應 ["A"]' }, { en: 'Use findByText to wait', zh: '使用 findByText 等待出現' } ],
     initialCode: `import { render, screen } from '@testing-library/react';
 import { SimpleList } from './SimpleList';
 
@@ -413,20 +458,20 @@ test('loads items', async () => {
         mustMatch: [ /mockResolvedValue/ ]
       },
       {
-        description: { en: "Use findBy & toBeInTheDocument", zh: "使用 findBy 與 toBeInTheDocument" },
-        mustMatch: [ /await screen\.findByText/, /\.toBeInTheDocument/ ],
+        description: { en: "Use await findByText", zh: "使用 await findByText" },
+        mustMatch: [ /await\s+screen\.findByText/, /\.toBeInTheDocument/ ],
         mustNotMatch: [ { pattern: /getByText/, message: { en: "getByText is synchronous and will fail. Use findByText.", zh: "getByText 是同步的，會失敗。請使用 findByText。" } } ]
       }
     ]
   },
   {
-    id: '3.2',
+    id: '3.3',
     section: '3. Async & Mocking',
-    title: { en: 'API Retry', zh: 'API 重試' },
-    description: { en: 'Mock failure then success.', zh: '先模擬失敗，再模擬成功。' },
+    title: { en: 'API Retry Logic', zh: 'API 重試邏輯' },
+    description: { en: 'Mock a failure first, then a success.', zh: '先模擬失敗，再模擬成功。' },
     framework: TestFramework.JEST,
     difficulty: 'Tricky',
-    requirements: [ { en: 'Mock fetch: reject then resolve', zh: '模擬 fetch: 先 reject 後 resolve' }, { en: 'Click load using userEvent', zh: '使用 userEvent 點擊載入' }, { en: 'Check Success', zh: '檢查 Success' } ],
+    requirements: [ { en: 'Mock fetch: reject then resolve', zh: '模擬 fetch: 先 reject 後 resolve' }, { en: 'Click load using await user.click', zh: '使用 await user.click 點擊載入' }, { en: 'Check Success', zh: '檢查 Success' } ],
     initialCode: `import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RetryButton } from './RetryButton';
@@ -449,18 +494,17 @@ test('retries on error', async () => {
         mustMatch: [ /mockRejectedValueOnce/, /mockResolvedValueOnce/ ]
       },
       {
-        description: { en: "Check states using jest-dom", zh: "使用 jest-dom 檢查狀態" },
-        mustMatch: [ /expect\(.*findByText\(.*Error.*\).*\)\.toBeInTheDocument/, /expect\(.*findByText\(.*Success.*\).*\)\.toBeInTheDocument/ ]
+        description: { en: "Async Click (await user.click)", zh: "非同步點擊 (await user.click)" },
+        mustMatch: [ /await\s+user\.click/ ]
       },
       {
-        description: { en: "Click Load (user.click)", zh: "點擊 Load (user.click)" },
-        mustMatch: [ /user\.click/ ],
-        mustNotMatch: [ { pattern: /fireEvent/, message: { en: "Use userEvent instead of fireEvent", zh: "請使用 userEvent 取代 fireEvent" } } ]
+        description: { en: "Check states using findBy", zh: "使用 findBy 檢查狀態" },
+        mustMatch: [ /expect\(.*findByText\(.*Error.*\).*\)\.toBeInTheDocument/, /expect\(.*findByText\(.*Success.*\).*\)\.toBeInTheDocument/ ]
       }
     ]
   },
   {
-    id: '3.3',
+    id: '3.4',
     section: '3. Async & Mocking',
     title: { en: 'Loading Skeleton', zh: '載入骨架屏' },
     description: { en: 'Wait for skeleton to disappear.', zh: '等待骨架屏消失。' },
@@ -492,7 +536,7 @@ test('removes skeleton', async () => {
     ]
   },
   {
-    id: '3.4',
+    id: '3.5',
     section: '3. Async & Mocking',
     title: { en: 'Empty State', zh: '空狀態' },
     description: { en: 'Test when API returns empty list.', zh: '測試 API 回傳空列表的情況。' },
@@ -518,7 +562,7 @@ test('shows empty state', async () => {
     validationRules: [
       {
         description: { en: "Trigger Search", zh: "觸發搜尋" },
-        mustMatch: [ /user\.click/ ]
+        mustMatch: [ /await\s+user\.click/ ]
       },
       {
         description: { en: "Find Result Text", zh: "找到結果文字" },
@@ -527,7 +571,7 @@ test('shows empty state', async () => {
     ]
   },
   {
-    id: '3.5',
+    id: '3.6',
     section: '3. Async & Mocking',
     title: { en: 'Error Toast', zh: '錯誤提示' },
     description: { en: 'Verify alert role when API fails.', zh: '當 API 失敗時驗證 alert role。' },
@@ -558,7 +602,7 @@ test('shows error toast', async () => {
       },
       {
         description: { en: "Click Subscribe", zh: "點擊訂閱" },
-        mustMatch: [ /user\.click/ ]
+        mustMatch: [ /await\s+user\.click/ ]
       },
       {
         description: { en: "Find Alert & Verify", zh: "找到 Alert 並驗證" },

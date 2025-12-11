@@ -74,6 +74,7 @@ const App: React.FC = () => {
         [activeLessonId]: activeLesson.initialCode
       }));
     }
+    
     setShowHint(false); // Reset hint on lesson change
   }, [activeLessonId, activeLesson.initialCode]);
 

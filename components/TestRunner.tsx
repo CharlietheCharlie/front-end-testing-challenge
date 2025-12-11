@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Lesson, TestResult } from '../types';
 import { CheckCircle2, XCircle, Terminal, Play, Loader2, Cpu, Bug, AlertTriangle } from 'lucide-react';
 
@@ -42,6 +42,13 @@ export const TestRunner: React.FC<TestRunnerProps> = ({ lesson, code, onResultCh
   const [isRunning, setIsRunning] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
   const [displayLogs, setDisplayLogs] = useState<LogEntry[]>([]);
+
+  // Reset terminal when lesson changes
+  useEffect(() => {
+    setResult(null);
+    setDisplayLogs([]);
+    setIsRunning(false);
+  }, [lesson.id]);
 
   // Simulate screen.debug() behavior
   const handleDebug = () => {

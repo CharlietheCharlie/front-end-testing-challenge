@@ -1,6 +1,37 @@
 import React, { useState, useEffect } from 'react';
 
-// 3.1 Fetch List
+// 3.1 Mock Functions (Callbacks)
+export const UserForm: React.FC<{ onSubmit: (data: { name: string }) => void }> = ({ onSubmit }) => {
+  const [name, setName] = useState('');
+  return (
+    <div className="p-4 bg-dark-800 border border-dark-700 rounded">
+      <input 
+        aria-label="Name"
+        value={name} 
+        onChange={e => setName(e.target.value)}
+        className="block w-full mb-2 p-2 bg-dark-900 border border-dark-700 rounded text-white"
+        placeholder="Enter name"
+      />
+      <button 
+        onClick={() => onSubmit({ name })}
+        className="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-500"
+      >
+        Save
+      </button>
+    </div>
+  );
+};
+export const UserFormCode = `export const UserForm = ({ onSubmit }) => {
+  const [name, setName] = useState('');
+  return (
+    <div>
+      <input aria-label="Name" onChange={e => setName(e.target.value)} />
+      <button onClick={() => onSubmit({ name })}>Save</button>
+    </div>
+  );
+};`;
+
+// 3.2 Fetch List (Old 3.1)
 export const SimpleList: React.FC = () => {
   const [items, setItems] = useState<string[]>([]);
   useEffect(() => {
@@ -12,7 +43,7 @@ export const SimpleListCode = `useEffect(() => {
   fetch('/api/items').then(r => r.json()).then(setItems);
 }, []);`;
 
-// 3.2 Retry Logic
+// 3.3 Retry Logic (Old 3.2)
 export const RetryButton: React.FC = () => {
   const [msg, setMsg] = useState('');
   const load = async () => {
@@ -39,7 +70,7 @@ export const RetryButtonCode = `const load = async () => {
   }
 };`;
 
-// 3.3 Loading State (Skeleton)
+// 3.4 Loading State (Skeleton)
 export const DashboardWidget: React.FC = () => {
   const [data, setData] = useState<string | null>(null);
   useEffect(() => {
@@ -52,7 +83,7 @@ export const DashboardWidget: React.FC = () => {
 export const DashboardWidgetCode = `if (!data) return <div data-testid="skeleton" ... />;
 return <div>{data}</div>;`;
 
-// 3.4 Empty State
+// 3.5 Empty State
 export const SearchResults: React.FC = () => {
   const [results, setResults] = useState<string[]>([]);
   const [searched, setSearched] = useState(false);
@@ -71,7 +102,7 @@ export const SearchResults: React.FC = () => {
 };
 export const SearchResultsCode = `{searched && results.length === 0 && <div>No results found</div>}`;
 
-// 3.5 API Error Toast
+// 3.6 API Error Toast
 export const Newsletter: React.FC = () => {
   const [error, setError] = useState('');
   const sub = async () => {
