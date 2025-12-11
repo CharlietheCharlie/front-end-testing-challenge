@@ -139,7 +139,7 @@ export const Bomb = ({ shouldThrow }) => {
 
 // 6.5 Custom Hook Integration
 export const useWindowWidth = () => {
-  const [width, setWidth] = useState(1024);
+  const [width] = useState(1024);
   // mock implementation
   return width;
 };
