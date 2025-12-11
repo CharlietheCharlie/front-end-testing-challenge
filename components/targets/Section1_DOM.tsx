@@ -14,8 +14,10 @@ export const LoginForm: React.FC = () => (
 export const LoginFormCode = `export const LoginForm = () => (
   <form onSubmit={e => e.preventDefault()}>
     <h3>Login</h3>
-    <label htmlFor="email">Email</label>
-    <input id="email" type="email" />
+    <div>
+      <label htmlFor="email">Email</label>
+      <input id="email" type="email" />
+    </div>
     <button>Sign In</button>
   </form>
 );`;
@@ -28,16 +30,22 @@ export const SecretMessage: React.FC = () => {
       <button onClick={() => setShow(!show)} className="text-primary-400 mb-2 border border-primary-400 px-2 py-1 rounded text-xs">
         {show ? 'Hide' : 'Show'}
       </button>
-      {show && <div data-testid="secret">The eagle has landed.</div>}
+      {show && <div data-testid="secret" className="text-white mt-2">The eagle has landed.</div>}
     </div>
   );
 };
 export const SecretMessageCode = `export const SecretMessage = () => {
   const [show, setShow] = useState(false);
+  
   return (
     <div>
-      <button onClick={() => setShow(!show)}>{show ? 'Hide' : 'Show'}</button>
-      {show && <div data-testid="secret">The eagle has landed.</div>}
+      <button onClick={() => setShow(!show)}>
+        {show ? 'Hide' : 'Show'}
+      </button>
+      
+      {show && (
+        <div data-testid="secret">The eagle has landed.</div>
+      )}
     </div>
   );
 };`;
@@ -83,14 +91,18 @@ export const TabSwitcher: React.FC = () => {
 };
 export const TabSwitcherCode = `export const TabSwitcher = () => {
   const [active, setActive] = useState('home');
+
   return (
     <div>
-      <button 
-        className={active === 'home' ? 'active' : ''} 
-        onClick={() => setActive('home')}>
-        Home
-      </button>
-      {/* ... */}
+      {['home', 'settings'].map(tab => (
+        <button
+          key={tab}
+          onClick={() => setActive(tab)}
+          className={active === tab ? 'bg-primary-600' : ''}
+        >
+          {tab}
+        </button>
+      ))}
     </div>
   );
 };`;
@@ -100,20 +112,23 @@ export const DoubleForm: React.FC = () => (
   <div className="space-y-4">
     <section aria-label="Shipping" className="p-3 bg-dark-800 border border-dark-700 rounded">
       <h4 className="text-xs uppercase text-slate-500 mb-2">Shipping</h4>
-      <input placeholder="Name" className="w-full p-1 bg-dark-900 border border-dark-700 rounded" />
+      <input placeholder="Name" className="w-full p-1 bg-dark-900 border border-dark-700 rounded text-white" />
     </section>
     <section aria-label="Billing" className="p-3 bg-dark-800 border border-dark-700 rounded">
       <h4 className="text-xs uppercase text-slate-500 mb-2">Billing</h4>
-      <input placeholder="Name" className="w-full p-1 bg-dark-900 border border-dark-700 rounded" />
+      <input placeholder="Name" className="w-full p-1 bg-dark-900 border border-dark-700 rounded text-white" />
     </section>
   </div>
 );
 export const DoubleFormCode = `export const DoubleForm = () => (
   <div>
     <section aria-label="Shipping">
+      <h4>Shipping</h4>
       <input placeholder="Name" />
     </section>
+
     <section aria-label="Billing">
+      <h4>Billing</h4>
       <input placeholder="Name" />
     </section>
   </div>
