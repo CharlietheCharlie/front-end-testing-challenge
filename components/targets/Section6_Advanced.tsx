@@ -76,7 +76,7 @@ export const ErrorBoundaryCode = `// Test that ErrorBoundary catches the error
 
 // 6.5 Custom Hook Integration
 export const useWindowWidth = () => {
-  const [width, setWidth] = useState(1024);
+  const [width] = useState(1024);
   // mock implementation
   return width;
 };

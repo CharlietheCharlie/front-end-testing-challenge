@@ -416,7 +416,7 @@ test('submits form data', async () => {
   // 3. Interaction
   // 4. Expect
 });`,
-    targetComponent: UserForm,
+    targetComponent: UserForm as any,
     targetCodeDisplay: UserFormCode,
     hint: { 
       en: "const mockSubmit = jest.fn();\nrender(<UserForm onSubmit={mockSubmit} />);\n\nawait user.type(screen.getByLabelText('Name'), 'Alice');\nawait user.click(screen.getByRole('button', { name: /save/i }));\n\nexpect(mockSubmit).toHaveBeenCalledWith({ name: 'Alice' });", 
