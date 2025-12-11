@@ -8,7 +8,6 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
-    base: '/front-end-testing-challenge/',
     plugins: [react()],
     define: {
       // Polyfill process.env.API_KEY for the geminiService
