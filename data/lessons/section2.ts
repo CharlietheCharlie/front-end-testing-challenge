@@ -115,7 +115,7 @@ test('adds tag on enter', async () => {
       },
       {
         description: { en: "Verify Tag", zh: "驗證 Tag" },
-        mustMatch: [ /expect\(.*getByText\(.*#React.*\).*\]\.toBeInTheDocument/ ]
+        mustMatch: [  /expect\(.*getByText\(.*#React.*\).*toBeInTheDocument\(\)/ ]
       }
     ]
   },
