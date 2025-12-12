@@ -184,7 +184,7 @@ test('toggles preference', async () => {
       },
       {
         description: { en: "Verify Checked State", zh: "驗證勾選狀態" },
-        mustMatch: [ /expect\(.*getByLabelText\(.*Email.*\).*\]\.toBeChecked/ ]
+        mustMatch: [ /expect\(.*\).*toBeChecked\(\)/ ]
       }
     ]
   },
