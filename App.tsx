@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { LESSONS } from './data/lessons';
-import { Language } from './types';
+import { Language, Lesson, TestFramework } from './types';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { InfoPanel } from './components/layout/InfoPanel';
 import { EditorPanel } from './components/layout/EditorPanel';
 import { RoleReferenceModal } from './components/RoleReferenceModal';
+import { Cheatsheet } from './components/Cheatsheet';
 
 const STORAGE_KEYS = {
   COMPLETED: 'testmaster_completed_lessons',
@@ -14,10 +15,27 @@ const STORAGE_KEYS = {
   LANG: 'testmaster_lang'
 };
 
+// Dummy lesson object for the Intro/Cheatsheet view to prevent crashes
+const INTRO_LESSON_STUB: Lesson = {
+  id: 'INTRO',
+  section: 'General',
+  title: { en: 'Cheatsheet', zh: '速查表' },
+  description: { en: '', zh: '' },
+  framework: TestFramework.RTL,
+  difficulty: 'Beginner',
+  requirements: [],
+  initialCode: '',
+  targetComponent: () => null,
+  targetCodeDisplay: '',
+  validationRules: [],
+  hint: { en: '', zh: '' }
+};
+
 const App: React.FC = () => {
   // 1. Initialize state from LocalStorage
   const [activeLessonId, setActiveLessonId] = useState<string>(() => {
-    return localStorage.getItem(STORAGE_KEYS.ACTIVE) || LESSONS[0].id;
+    // Default to 'INTRO' if first time, or fetch from storage
+    return localStorage.getItem(STORAGE_KEYS.ACTIVE) || 'INTRO';
   });
 
   const [userCode, setUserCode] = useState<Record<string, string>>(() => {
@@ -47,7 +65,10 @@ const App: React.FC = () => {
   const [showHint, setShowHint] = useState(false);
   const [showA11y, setShowA11y] = useState(false);
 
-  const activeLesson = LESSONS.find(l => l.id === activeLessonId) || LESSONS[0];
+  // Derive active lesson safely
+  const activeLesson = activeLessonId === 'INTRO' 
+    ? INTRO_LESSON_STUB 
+    : (LESSONS.find(l => l.id === activeLessonId) || LESSONS[0]);
 
   // 2. Persist state changes to LocalStorage
   useEffect(() => {
@@ -68,13 +89,12 @@ const App: React.FC = () => {
 
   // 3. Ensure code exists for current lesson (Initial load fallback)
   useEffect(() => {
-    if (!userCode[activeLessonId]) {
+    if (activeLessonId !== 'INTRO' && !userCode[activeLessonId]) {
       setUserCode(prev => ({
         ...prev,
         [activeLessonId]: activeLesson.initialCode
       }));
     }
-    
     setShowHint(false); // Reset hint on lesson change
   }, [activeLessonId, activeLesson.initialCode]);
 
@@ -109,31 +129,40 @@ const App: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-screen relative">
         
-        <Header 
-          lesson={activeLesson}
-          showHint={showHint}
-          onToggleHint={() => setShowHint(!showHint)}
-          lang={lang}
-          onToggleLang={() => setLang(l => l === 'en' ? 'zh' : 'en')}
-          onToggleA11y={() => setShowA11y(true)}
-        />
+        {/* Only show standard Header/Editor layout if NOT in INTRO mode */}
+        {activeLessonId === 'INTRO' ? (
+          <div className="flex-1 h-full">
+            <Cheatsheet lang={lang} />
+          </div>
+        ) : (
+          <>
+            <Header 
+              lesson={activeLesson}
+              showHint={showHint}
+              onToggleHint={() => setShowHint(!showHint)}
+              lang={lang}
+              onToggleLang={() => setLang(l => l === 'en' ? 'zh' : 'en')}
+              onToggleA11y={() => setShowA11y(true)}
+            />
 
-        {/* Workspace */}
-        <div className="flex-1 flex overflow-hidden">
-          <InfoPanel 
-            lesson={activeLesson}
-            lang={lang}
-            showHint={showHint}
-          />
+            {/* Workspace */}
+            <div className="flex-1 flex overflow-hidden">
+              <InfoPanel 
+                lesson={activeLesson}
+                lang={lang}
+                showHint={showHint}
+              />
 
-          <EditorPanel 
-            lesson={activeLesson}
-            code={userCode[activeLessonId] || ''}
-            onCodeChange={handleCodeChange}
-            onTestPass={handleTestPass}
-            lang={lang}
-          />
-        </div>
+              <EditorPanel 
+                lesson={activeLesson}
+                code={userCode[activeLessonId] || ''}
+                onCodeChange={handleCodeChange}
+                onTestPass={handleTestPass}
+                lang={lang}
+              />
+            </div>
+          </>
+        )}
       </main>
     </div>
   );
