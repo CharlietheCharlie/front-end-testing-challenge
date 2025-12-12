@@ -73,12 +73,7 @@ export const RetryButton: React.FC = () => {
       await fetch('/api/data');
       setMsg('Success');
     } catch {
-      try {
-        await fetch('/api/data');
-        setMsg('Success');
-      } catch {
-        setMsg('Error');
-      }
+      setMsg('Error');
     }
   };
   return (
@@ -96,12 +91,7 @@ export const RetryButtonCode = `export const RetryButton = () => {
       await fetch('/api/data');
       setMsg('Success');
     } catch {
-      try {
-        await fetch('/api/data');
-        setMsg('Success');
-      } catch {
-        setMsg('Error');
-      }
+      setMsg('Error');
     }
   };
 
