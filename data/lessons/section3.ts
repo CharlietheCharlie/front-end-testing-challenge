@@ -123,7 +123,7 @@ test('retries on error', async () => {
       },
       {
         description: { en: "Check states using findBy", zh: "使用 findBy 檢查狀態" },
-        mustMatch: [ /expect\(.*findByText\(.*Error.*\).*\]\.toBeInTheDocument/, /expect\(.*findByText\(.*Success.*\).*\]\.toBeInTheDocument/ ]
+        mustMatch: [ /expect\(.*findByText\(.*Error.*\).*\.toBeInTheDocument/, /expect\(.*findByText\(.*Success.*\).*\.toBeInTheDocument/ ]
       }
     ]
   },
@@ -230,7 +230,7 @@ test('shows error toast', async () => {
       },
       {
         description: { en: "Find Alert & Verify", zh: "找到 Alert 並驗證" },
-        mustMatch: [ /expect\(.*findByRole\(.*['"]alert['"].*\).*\]\.toBeInTheDocument/ ]
+        mustMatch: [ /expect\(.*findByRole\(.*['"]alert['"].*\).*\.toBeInTheDocument/ ]
       }
     ]
   },
